@@ -6,19 +6,17 @@
  */
 
 #include <glm/gtx/string_cast.hpp>
-#include <iostream>
 
 #include "Button.h"
-#include "Window.h"
 
 Button::Button(glm::vec3 color, float margin) :
 	Face(),
 	m_color(color),
 	m_margin(margin),
-	m_callback(nullptr),
+	m_callbackDown(nullptr),
 	m_callbackUp(nullptr)
 {
-	m_callback = []{return;};
+	m_callbackDown = []{return;};
 	m_callbackUp = []{return;};
 }
 
@@ -34,11 +32,12 @@ void Button::draw(IPainter* pPainter)
 
 void Button::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
 {
+	Face::onCursorButton(pos, down, button);
 	if (down)
 	{
 		if (m_isSelected)
 		{
-			m_callback();
+			m_callbackDown();
 			m_isHeld = true;
 		}
 	}
@@ -47,5 +46,4 @@ void Button::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
 		m_callbackUp();
 		m_isHeld = false;
 	}
-	Face::onCursorButton(pos, down, button);
 }

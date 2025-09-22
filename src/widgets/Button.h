@@ -26,14 +26,14 @@ public:
 
 	void onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
 
-	void setCallback(std::function<void()> cb) {m_callback = cb;}
+	void setCallbackDown(std::function<void()> cb) {m_callbackDown = cb;}
 	void setCallbackUp(std::function<void()> cb) {m_callbackUp = cb;}
 protected:
 	glm::vec3 m_color;
 	float m_margin;
 	bool m_isHeld;
 
-	std::function<void()> m_callback;
+	std::function<void()> m_callbackDown;
 	std::function<void()> m_callbackUp;
 };
 

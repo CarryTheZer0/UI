@@ -1,21 +1,21 @@
 /*
- *  Panel.h
+ *  TextBox.h
  *
- *  Created on: 22 Jul 2021
+ *  Created on: 24 Jan 2025
  *      Author: mchlp
  */
 
-#ifndef UI_PANEL_H_
-#define UI_PANEL_H_
+#ifndef UI_TEXTBOX_H_
+#define UI_TEXTBOX_H_
 
 #include "Face.h"
 #include "IPainter.h"
 
-class Panel : public Face
+class TextBox : public Face
 {
 public:
-	Panel(glm::vec3 color, float margin=50.0f);
-	~Panel() = default;
+	TextBox(glm::vec3 color, float margin=10.0f);
+	~TextBox() = default;
 
 	void draw(IPainter* pPainter) override;
 
@@ -25,4 +25,4 @@ protected:
 	glm::vec3 m_color;
 };
 
-#endif /* UI_PANEL_H_ */
+#endif /* UI_TEXTBOX_H_ */

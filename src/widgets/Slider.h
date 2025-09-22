@@ -1,4 +1,5 @@
 
+#include <functional>
 #include <glm/glm.hpp>
 
 #include "Face.h"
@@ -14,14 +15,16 @@ public:
 
 	void onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
 	void onCursorDragged(glm::vec2 offset) override;
-    void onScroll(glm::vec2 offset) override;
+    bool onScroll(glm::vec2 offset) override;
 
-    float getValue();
+    void updateValue();
 protected:
 	glm::vec3 m_color;
 	float m_margin;
     bool m_held;
     float m_offset, m_min, m_max;
+
+	float m_value;
 private:
     void setOffset(float offset);
 };

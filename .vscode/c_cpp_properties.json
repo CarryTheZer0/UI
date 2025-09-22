@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/*",
+                "${workspaceFolder}/src/*",
+                "${workspaceFolder}/src/graphics/*",
+                "${workspaceFolder}/src/graphics/shaders/*",
+                "${workspaceFolder}/src/widgets/*",
+                "${workspaceFolder}/src/input/*",
+                "${workspaceFolder}/archive/*",
+                "C:/Clib/glm",
+                "C:/Clib/glfw-3.3.8/include",
+                "C:/Clib/glew-2.1.0/include",
+                "C://Clib/libfreetype2/freetype2/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "windows-clang-x86"
+        }
+    ],
+    "version": 4
+}
