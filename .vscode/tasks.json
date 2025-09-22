@@ -1,0 +1,143 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Build Test",
+            "command": "g++",
+            "args": [
+                "-g",
+                "${fileDirname}\\${fileBasenameNoExtension}.cpp",
+                "${workspaceFolder}\\src\\input\\*.cpp",
+                "${workspaceFolder}\\src\\graphics\\*.cpp",
+                "${workspaceFolder}\\src\\graphics\\shaders\\*.cpp",
+                "${workspaceFolder}\\archive\\*.cpp",
+                "${workspaceFolder}\\lib\\libUi.a",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-I${workspaceFolder}\\src",
+                "-I${workspaceFolder}\\src\\graphics",
+                "-I${workspaceFolder}\\src\\graphics\\shaders",
+                "-I${workspaceFolder}\\src\\widgets",
+                "-I${workspaceFolder}\\src\\input",
+                "-I${workspaceFolder}\\archive",
+                "-IC:\\Clib\\glew-2.1.0\\include",
+                "-IC:\\Clib\\glfw-3.4.bin.WIN64\\include",
+                "-IC:\\Clib\\glm",
+                "-IC:\\Clib\\libfreetype2\\freetype2\\include",
+                "-L${workspaceFolder}\\ext",
+                "-lfreetype",
+                "-lglew32",
+                "-lglew32s",
+                "-lglfw3",
+                "-lopengl32",
+                "-lgdi32",
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "detail": "Build a given regression test"
+        },
+        {
+            "type": "shell",
+            "label": "Test Library",
+            "dependsOn": ["Build Test"],
+            "command": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "options": {
+                "cwd": "${workspaceFolder}\\regressionTest"
+            },
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "detail": "Test the open file"
+        },
+        {
+            "type": "cppbuild",
+            "label": "Build Library",
+            "command": "g++",
+            "args": [
+                "-g",
+                "-c",
+                "${workspaceFolder}\\src\\widgets\\*.cpp",
+                "${workspaceFolder}\\src\\input\\*.cpp",
+                "${workspaceFolder}\\src\\graphics\\*.cpp",
+                "${workspaceFolder}\\src\\graphics\\shaders\\*.cpp",
+                "-I${workspaceFolder}\\src",
+                "-I${workspaceFolder}\\src\\graphics",
+                "-I${workspaceFolder}\\src\\graphics\\shaders",
+                "-I${workspaceFolder}\\src\\widgets",
+                "-I${workspaceFolder}\\src\\input",
+                "-IC:\\Clib\\glew-2.1.0\\include",
+                "-IC:\\Clib\\glfw-3.4.bin.WIN64\\include",
+                "-IC:\\Clib\\glm",
+                "-IC:\\Clib\\libfreetype2\\freetype2\\include",
+                "-L${workspaceFolder}\\ext",
+                "-lglew32",
+                "-lglew32s",
+                "-lglfw3",
+                "-lopengl32",
+                "-lgdi32",
+                "-lfreetype"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\lib"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Build the UI Library"
+        },
+        {
+            "type": "shell",
+            "label": "Update Include",
+            "dependsOn": ["Build Library"],
+            "command": "copy",
+            "args": [
+                 "src/*.h,src/*/*.h,src/*/*/*.h",
+                 "include"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Copy include files"
+        },
+        {
+            "type": "shell",
+            "label": "Archive Library",
+            "dependsOn": ["Update Include"],
+            "command": "ar",
+            "args": [
+                "rvs",
+                "${workspaceFolder}\\lib\\libUi.a",
+                "${workspaceFolder}\\lib\\*.o"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}\\lib"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Archive the UI Library"
+        }
+    ],
+    "version": "2.0.0"
+}

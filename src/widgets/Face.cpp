@@ -5,13 +5,12 @@
  *      Author: mchlp
  */
 
-#include <iostream>
-#include <glm/gtx/string_cast.hpp>
+#include <ranges>
 
 #include "Face.h"
-#include "Window.h"
 
 Face::Face(float width, float height) :
+	m_id(-1),
 	m_pParent(nullptr),
 	m_isSelected(false)
 {
@@ -20,59 +19,70 @@ Face::Face(float width, float height) :
 
 Face::~Face()
 {
-	for (Face* f : m_children)
-	{
-		delete f;
-	}
+	m_children.clear();
 }
 
 void Face::draw(IPainter* pPainter)
 {
-	for (Face* pFace : m_children)
+	for (auto face = m_children.begin(); face != m_children.end(); ++face)
 	{
-		pFace->draw(pPainter);
+		face->second->draw(pPainter);
 	}
 }
 
 void Face::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
 {
-	for (Face* pFace : m_children)
+	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		pFace->onCursorButton(pos, down, button);
+		face->second->onCursorButton(pos, down, button);
 	}
 }
 
 void Face::onCursorMoved(glm::vec2 pos)
 {
-	for (Face* pFace : m_children)
+	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		pFace->onCursorMoved(pos);
+		face->second->onCursorMoved(pos);
 	}
 	m_isSelected = isInBounds(pos);
 }
 
 void Face::onCursorDragged(glm::vec2 offset)
 {
-	for (Face* pFace : m_children)
+	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		pFace->onCursorDragged(offset);
+		face->second->onCursorDragged(offset);
 	}
 }
 
-void Face::onScroll(glm::vec2 offset)
+bool Face::onScroll(glm::vec2 offset)
 {
-	std::cout << offset.x << " " << offset.y << std::endl;
-	for (Face* pFace : m_children)
+	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		pFace->onScroll(offset);
+		if (face->second->onScroll(offset))
+			return true;
 	}
+
+	return false;
 }
 
-void Face::addChild(Face* pChild)
+void Face::addChild(std::shared_ptr<Face> pChild)
 {
-	m_children.emplace_back(pChild);
+	pChild->setId(m_nextID);
+	m_children.emplace(std::make_pair(m_nextID, pChild));
+	m_nextID++;
 	pChild->setParent(this);
 	pChild->setRect({ 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f, 100.0f });
+}
+
+void Face::removeChild(unsigned int id)
+{
+	m_children.erase(id);
+}
+
+void Face::removeChild(std::shared_ptr<Face> face)
+{
+	m_children.erase(face->getId());
 }
 
 void Face::setParent(Face* pParent)

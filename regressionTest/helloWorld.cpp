@@ -11,14 +11,15 @@
 #include <math.h>
 #include <glm/gtx/string_cast.hpp>
 
-#include "UIRenderer.h"
+#include "DebugRenderer.h"
 #include "InputHandler.h"
 #include "Shader.h"
-#include "Painter.h"
+#include "DebugPainter.h"
 
 #include "Panel.h"
 #include "Slider.h"
 #include "Button.h"
+#include "TextBox.h"
 
 /*
  *  General purpose testing script
@@ -32,8 +33,10 @@ int main()
         return -1;
     }
 
+    int width = 1024; int height = 768;
+
     GLFWwindow* pWindow;
-	pWindow = glfwCreateWindow( 1024, 768, "Test 01", NULL, NULL);
+	pWindow = glfwCreateWindow( width, height, "Test 01", NULL, NULL);
     glfwMakeContextCurrent(pWindow);
 
     glewExperimental=true;
@@ -43,9 +46,12 @@ int main()
     }
 
     Shader s = Shader();
-    s.loadShaderFromFile("../src/graphics/shaders/SimpleVertexShader.glsl", "../src/graphics/shaders/SimpleFragmentShader.glsl");
+    s.loadShaderFromFile("../src/graphics/shaders/LineVertexShader.glsl", "../src/graphics/shaders/LineFragmentShader.glsl");
 
-    UIRenderer renderer = UIRenderer(s);
+    Shader s2 = Shader();
+    s2.loadShaderFromFile("../src/graphics/shaders/TextVertexShader.glsl", "../src/graphics/shaders/TextFragmentShader.glsl");
+
+    DebugRenderer renderer = DebugRenderer(s, s2, width, height);
     
 	glfwWindowHint(GLFW_SAMPLES, 4);  // 4x antialiasing
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);  // OpenGL 3.3g
@@ -58,48 +64,54 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glm::mat4 view = glm::lookAt(
-        glm::vec3(0,0,1),  // location
-        glm::vec3(0,0,0),  // target
-        glm::vec3(0,1,0)   // orientation (up direction)
-    );
-    renderer.setView(view);
-
-    // ortho camera :
-	glm::mat4 projection = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 100.0f); // In world coordinates
-    // glm::mat4 projection = glm::perspective(glm::radians(60.0f), 1024.0f / 768.0f, 0.1f, 100.0f);
-
-    renderer.setProjection(projection); 
-
-    Painter painter = Painter(&renderer, "myPainter");
+    DebugPainter painter = DebugPainter(&renderer, "myPainter");
     Face root = Face(1024.0f, 768.0f);
 
-    Panel panel = Panel(glm::vec3(1.0f, 1.0f, 0.0f));
-    root.addChild(&panel);
-    panel.setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(0.0f, 0.0f, 100.0f, 100.0f));
+    std::shared_ptr<Panel> panel = std::make_shared<Panel>(glm::vec3(1.0f, 1.0f, 0.0f));
+    root.addChild(panel);
+    panel->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f));
 
-    Button button1 = Button(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
-    panel.addChild(&button1);
-    button1.setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(10.0f, 10.0f, 20.0f, 20.0f));
-    std::function<void()> myfunc = [](){std::cout << "pressed" << std::endl;};
-    button1.setCallback(myfunc);
+    std::shared_ptr<Button> button1 = std::make_shared<Button>(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
+    panel->addChild(button1);
+    button1->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(10.0f, 10.0f, 20.0f, 20.0f));
+    std::function<void()> myfunc = [](){std::cout << "pressed 1" << std::endl;};
+    button1->setCallbackDown(myfunc);
 
-    Button button2 = Button(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
-    panel.addChild(&button2);
-    button2.setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f));
-    button2.setCallback(myfunc);
+    std::shared_ptr<Button> button2 = std::make_shared<Button>(glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
+    panel->addChild(button2);
+    std::function<void()> myfunc2 = [](){std::cout << "pressed 2" << std::endl;};
+    button2->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f));
+    button2->setCallbackDown(myfunc2);
 
-    Slider slider = Slider(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
-    panel.addChild(&slider);
-    slider.setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(10.0f, 50.0f, 40.0f, 30.0f));
+    panel->removeChild(button1);
 
-    InputHandler input = InputHandler(&root);
+    std::shared_ptr<TextBox> textBox = std::make_shared<TextBox>(glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
+    panel->addChild(textBox);
+    textBox->setRect(glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4());
+
+    std::shared_ptr<TextBox> textBox2 = std::make_shared<TextBox>(glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
+    textBox->addChild(textBox2);
+    textBox2->setRect(glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4());
+
+    std::shared_ptr<Slider> slider = std::make_shared<Slider>(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
+    panel->addChild(slider);
+    slider->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
+
+    std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
+    panel->addChild(slider2);
+    slider2->setRect(glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
+
+    std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
+    slider->addChild(slider3);
+    slider3->setRect(glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f));
+
+    temp_UI::InputHandler input = temp_UI::InputHandler(&root);
 
     glfwSetWindowUserPointer( pWindow, &input );
 
     glfwSetCursorPosCallback( pWindow, []( GLFWwindow* window, double x, double y)
     {
-        InputHandler* input = static_cast<InputHandler*>( glfwGetWindowUserPointer( window ) );
+        temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
 
         // x = -1.0f + 2 * x / 1024.0f;
         // y = -1.0f + 2 * (768.0f - y) / 768.0f;
@@ -121,13 +133,13 @@ int main()
 
     glfwSetMouseButtonCallback( pWindow, []( GLFWwindow* window, int button, int action, int mods)
     {
-        InputHandler* input = static_cast<InputHandler*>( glfwGetWindowUserPointer( window ) );
+        temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
         input->mouseCallback(button, action, mods);
     });
 
     glfwSetScrollCallback( pWindow, [](GLFWwindow* window, double x, double y)
     {
-        InputHandler* input = static_cast<InputHandler*>( glfwGetWindowUserPointer( window ) );
+        temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
         input->scrollCallback(x, y);
     });
 
@@ -135,11 +147,12 @@ int main()
         glfwPollEvents();
 
 		// render
-		glClearColor(0.18f, 0.38f, 0.37f, 1.0f);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
         root.draw(&painter);
-        renderer.draw();
+        renderer.drawLines();
+        renderer.drawQuads();
 
         if (glfwWindowShouldClose(pWindow)) {
             running = false;
