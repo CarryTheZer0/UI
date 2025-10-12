@@ -25,29 +25,40 @@ void Slider::draw(IPainter* pPainter)
 	Face::draw(pPainter);
 }
 
-void Slider::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
+bool Slider::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
 {
-    Face::onCursorButton(pos, down, button);
-	if (!down)
+    if (Face::onCursorButton(pos, down, button)) return true;
+	
+    if (!down)
+    {
         m_held = false;
+        return false;
+    }
     else if (m_isSelected)
+    {
         m_held = true;
+        return true;
+    }
+
+    return false;
 }
 
-void Slider::onCursorDragged(glm::vec2 offset)
+bool Slider::onCursorDragged(glm::vec2 offset)
 {
-    Face::onCursorDragged(offset);
-	if (m_held)
+    if (Face::onCursorDragged(offset)) return true;
+
+    if (m_held)
     {
         setOffset(offset.x);
         updateValue();
     }
+
+    return false;
 }
 
 bool Slider::onScroll(glm::vec2 offset)
 {
-    if (Face::onScroll(offset))
-        return true;
+    if (Face::onScroll(offset)) return true;
 
 	if (m_isSelected)
     {
