@@ -10,7 +10,7 @@
 
 #include <glm/glm.hpp>
 
-#include <map>
+#include <vector>
 #include <memory>
 
 #include "IPainter.h"
@@ -24,26 +24,19 @@ public:
 
 	virtual void draw(IPainter* pPainter);
 	// note 'cursor' is temporary, todo implement focus
-	virtual void onCursorMoved(glm::vec2 pos);
-	virtual void onCursorButton(glm::vec2 pos, bool down, unsigned int button);
-	virtual void onCursorDragged(glm::vec2 offset);
+	virtual bool onCursorMoved(glm::vec2 pos);
+	virtual bool onCursorButton(glm::vec2 pos, bool down, unsigned int button);
+	virtual bool onCursorDragged(glm::vec2 offset);
 	virtual bool onScroll(glm::vec2 offset);
 
 	void addChild(std::shared_ptr<Face> pChild);
-	void removeChild(unsigned int id);
 	void removeChild(std::shared_ptr<Face> face);
 	
 	glm::vec4 getRect();
 	void setRect(glm::vec4 pixels, glm::vec4 percentage);
-
-	unsigned int getId() { return m_id; }
-	void setId(unsigned int id) { m_id = id; }
 protected:
 	Face* m_pParent;
-	std::map<unsigned int, std::shared_ptr<Face>> m_children;
-
-	unsigned int m_id;
-	unsigned int m_nextID;
+	std::vector<std::shared_ptr<Face>> m_children;
 
 	glm::vec4 m_dimensions;
 

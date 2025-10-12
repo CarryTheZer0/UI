@@ -30,20 +30,25 @@ void Button::draw(IPainter* pPainter)
 	Face::draw(pPainter);
 }
 
-void Button::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
+bool Button::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
 {
-	Face::onCursorButton(pos, down, button);
+	if (Face::onCursorButton(pos, down, button)) return true;
+
 	if (down)
 	{
 		if (m_isSelected)
 		{
 			m_callbackDown();
 			m_isHeld = true;
+			return true;
 		}
 	}
 	else if (m_isHeld)
 	{
 		m_callbackUp();
 		m_isHeld = false;
+		return false;
 	}
+
+	return false;
 }

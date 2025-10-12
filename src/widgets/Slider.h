@@ -13,11 +13,13 @@ public:
 
 	void draw(IPainter* pPainter) override;
 
-	void onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
-	void onCursorDragged(glm::vec2 offset) override;
+	bool onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
+	bool onCursorDragged(glm::vec2 offset) override;
     bool onScroll(glm::vec2 offset) override;
 
     void updateValue();
+
+	float getValue() { return m_value; }
 protected:
 	glm::vec3 m_color;
 	float m_margin;
