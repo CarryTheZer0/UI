@@ -6,7 +6,6 @@
                 "${workspaceFolder}/*",
                 "${workspaceFolder}/src/*",
                 "${workspaceFolder}/src/graphics/*",
-                "${workspaceFolder}/src/graphics/shaders/*",
                 "${workspaceFolder}/src/widgets/*",
                 "${workspaceFolder}/src/input/*",
                 "${workspaceFolder}/archive/*",

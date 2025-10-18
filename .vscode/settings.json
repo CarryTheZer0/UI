@@ -97,7 +97,8 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "format": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "ranges": "cpp"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
