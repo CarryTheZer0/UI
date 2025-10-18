@@ -4,15 +4,17 @@
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
-Slider::Slider(glm::vec3 color, float margin) :
+Slider::Slider(glm::vec3 color, float margin, float min, float max) :
 	Face(),
 	m_held(false),
 	m_color(color),
 	m_margin(margin),
     m_offset(0.0f),
-    m_min(0.0f),
-    m_max(100.0f)
-{}
+    m_min(min),
+    m_max(max)
+{
+    m_callbackUpdate = [](float f){ return; };
+}
 
 void Slider::draw(IPainter* pPainter)
 {
@@ -73,6 +75,7 @@ bool Slider::onScroll(glm::vec2 offset)
 void Slider::updateValue()
 {
     m_value = m_min + (m_max - m_min) * (m_offset / (m_dimensions.z - m_dimensions.w));
+    m_callbackUpdate(m_value);
 }
 
 void Slider::setOffset(float offset)
