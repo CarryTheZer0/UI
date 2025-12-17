@@ -33,8 +33,6 @@ protected:
 	float m_margin;
 	bool m_isHeld;
 
-	int m_shortcut;
-
 	std::function<void()> m_callbackDown;
 	std::function<void()> m_callbackUp;
 };

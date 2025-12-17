@@ -14,8 +14,7 @@ Button::Button(glm::vec3 color, float margin) :
 	m_color(color),
 	m_margin(margin),
 	m_callbackDown(nullptr),
-	m_callbackUp(nullptr),
-	m_shortcut(0)
+	m_callbackUp(nullptr)
 {
 	m_callbackDown = []{return;};
 	m_callbackUp = []{return;};
