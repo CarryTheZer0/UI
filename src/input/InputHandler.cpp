@@ -6,47 +6,55 @@
 #include "InputHandler.h"
 #include "Face.h"
 
-temp_UI::InputHandler::InputHandler(Face* pUiRoot) :
-    m_pUiRoot(pUiRoot),
-    m_pressed(false)
-{}
+namespace temp_UI {
+    InputHandler::InputHandler(Face* pUiRoot) :
+        m_pUiRoot(pUiRoot)
+    {}
 
-void temp_UI::InputHandler::keyCallback(int key, int scancode, int action, int mods)
-{
-    // if (action == GLFW_PRESS)
-    //     onKeyPressed(key);
-    // else if (action == GLFW_RELEASE)
-    // 	onKeyReleased(key);
-}
-
-void temp_UI::InputHandler::mouseCallback(int button, int action, int mods)
-{
-    if (action == GLFW_PRESS && button == GLFW_MOUSE_BUTTON_1)
+    void InputHandler::keyCallback(int key, int action, int modifiers)
     {
-        if (!m_pressed)
-            m_pUiRoot->onCursorButton(glm::vec2(m_mouseX, m_mouseY), true, 0);
-        m_pressed = true;
+        if (action && key == GLFW_KEY_TAB) m_pUiRoot->cycleFocus();
+
+        onInput(key, action, modifiers);
     }
-    else if (action == GLFW_RELEASE && button == GLFW_MOUSE_BUTTON_1)
+
+    void InputHandler::mouseCallback(int button, int action, int modifiers)
     {
-        m_pUiRoot->onCursorButton(glm::vec2(m_mouseX, m_mouseY), false, 0);
-    	m_pressed = false;
+        m_pUiRoot->onCursorMoved(glm::vec2(m_mouseX, m_mouseY));
+        onInput(button, action, modifiers);
     }
-}
 
-void temp_UI::InputHandler::mouseMoveCallback(double xPos, double yPos)
-{
-    float xMove = xPos - m_mouseX;
-    float yMove = yPos - m_mouseY;
+    void InputHandler::mouseMoveCallback(double xPos, double yPos)
+    {
+        float xMove = xPos - m_mouseX;
+        float yMove = yPos - m_mouseY;
 
-	m_mouseX = xPos;
-	m_mouseY = yPos;
-	m_pUiRoot->onCursorMoved(glm::vec2(m_mouseX, m_mouseY));
-    if (m_pressed)
-        m_pUiRoot->onCursorDragged(glm::vec2(xMove, yMove));
-}
+        m_mouseX = xPos;
+        m_mouseY = yPos;
+        m_pUiRoot->onCursorMoved(glm::vec2(m_mouseX, m_mouseY));
+        if (m_pressed[GLFW_MOUSE_BUTTON_1])
+            m_pUiRoot->onCursorDragged(glm::vec2(xMove, yMove));
+    }
 
-void temp_UI::InputHandler::scrollCallback(float x, float y)
-{
-    m_pUiRoot->onScroll(glm::vec2(x, y));
+    void InputHandler::scrollCallback(float x, float y)
+    {
+        m_pUiRoot->onScroll(glm::vec2(x, y));
+    }
+
+    void InputHandler::onInput(int id, int action, int modifiers)
+    {
+        if (!m_pressed.count(id)) m_pressed[id] = false;
+
+        if (action == GLFW_PRESS)
+        {
+            if (!m_pressed[id])
+                m_pUiRoot->onSelect(true, 0);
+            m_pressed[id] = true;
+        }
+        else if (action == GLFW_RELEASE)
+        {
+            m_pUiRoot->onSelect(false, 0);
+            m_pressed[id] = false;
+        }
+    }
 }

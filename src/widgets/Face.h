@@ -18,33 +18,41 @@
 class Face
 {
 public:
-	Face() {};
+	Face();
 	Face(float width, float height);
 	virtual ~Face();
 
 	virtual void draw(IPainter* pPainter);
-	// note 'cursor' is temporary, todo implement focus
-	virtual bool onCursorMoved(glm::vec2 pos);
-	virtual bool onCursorButton(glm::vec2 pos, bool down, unsigned int button);
+
+	virtual bool onSelect(bool down, int modifiers);
+
+	virtual bool onCursorMoved(glm::vec2 position);
 	virtual bool onCursorDragged(glm::vec2 offset);
 	virtual bool onScroll(glm::vec2 offset);
 
-	void addChild(std::shared_ptr<Face> pChild);
-	void removeChild(std::shared_ptr<Face> face);
+	virtual bool cycleFocus();
+	virtual bool shiftFocusLevel(bool down);
+	virtual bool shiftFocus(glm::vec2 direction);
+
+	void addChild(std::weak_ptr<Face> child);
+	void removeChild(std::weak_ptr<Face> face);
 	
 	glm::vec4 getRect();
 	void setRect(glm::vec4 pixels, glm::vec4 percentage);
 protected:
 	Face* m_pParent;
-	std::vector<std::shared_ptr<Face>> m_children;
+	std::vector<std::weak_ptr<Face>> m_children;
+	int m_focus;
 
 	glm::vec4 m_dimensions;
 
 	bool m_isSelected; 
 
-	bool isInBounds(glm::vec2 pos);
+	bool isInBounds(glm::vec2 position);
 private:
-	void setParent(Face* pParent);
+	void select() { m_isSelected = true; } 
+	void deselect() { m_isSelected = false; } 
+	void setParent(Face* pParent) { m_pParent = pParent; }
 };
 
 #endif /* UI_FACE_H_ */

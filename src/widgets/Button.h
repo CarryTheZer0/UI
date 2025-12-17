@@ -24,14 +24,16 @@ public:
 
 	void draw(IPainter* pPainter) override;
 
-	bool onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
-
+	bool onSelect(bool down, int modifiers) override;
+	
 	void setCallbackDown(std::function<void()> cb) {m_callbackDown = cb;}
 	void setCallbackUp(std::function<void()> cb) {m_callbackUp = cb;}
 protected:
 	glm::vec3 m_color;
 	float m_margin;
 	bool m_isHeld;
+
+	int m_shortcut;
 
 	std::function<void()> m_callbackDown;
 	std::function<void()> m_callbackUp;
