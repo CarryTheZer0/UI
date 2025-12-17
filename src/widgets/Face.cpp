@@ -10,12 +10,17 @@
 
 #include "Face.h"
 
+Face::Face() :
+	m_focus(0),
+	m_isSelected(false)
+{}
+
 Face::Face(float width, float height) :
 	m_pParent(nullptr),
-	m_isSelected(false)
-{
-	m_dimensions = glm::vec4(0.0f, 0.0f, width, height);
-}
+	m_isSelected(false),
+	m_focus(0),
+	m_dimensions(0.0f, 0.0f, width, height)
+{}
 
 Face::~Face()
 {
@@ -26,69 +31,137 @@ void Face::draw(IPainter* pPainter)
 {
 	for (auto face = m_children.begin(); face != m_children.end(); ++face)
 	{
-		face->get()->draw(pPainter);
+		face->lock()->draw(pPainter);
 	}
 }
 
-bool Face::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
+bool Face::onSelect(bool down, int modifiers)
 {
+	bool wasPressed = false;
 	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		if (face->get()->onCursorButton(pos, down, button))
-			return true;
+		wasPressed = face->lock()->onSelect(down, modifiers);
 	}
 
-	return false;
+	return wasPressed;
 }
 
-bool Face::onCursorMoved(glm::vec2 pos)
+bool Face::onCursorMoved(glm::vec2 position)
 {
+	bool wasSelected = false;
 	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		if (face->get()->onCursorMoved(pos)) return true;
+		wasSelected = face->lock()->onCursorMoved(position) || wasSelected;
 	}
-	m_isSelected = isInBounds(pos);
+
+	if (isInBounds(position) && !wasSelected)
+	{
+		m_isSelected = true;
+		wasSelected = true;
+	}
+	else
+	{
+		m_isSelected = false;
+	}
 	
-	return false;
+	return wasSelected;
 }
 
 bool Face::onCursorDragged(glm::vec2 offset)
 {
+	bool wasDragged = false;
 	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		if (face->get()->onCursorDragged(offset))
-			return true;
+		wasDragged = (face->lock()->onCursorDragged(offset));
 	}
 
-	return false;
+	return wasDragged;
 }
 
 bool Face::onScroll(glm::vec2 offset)
 {
+	bool wasScrolled = false;
 	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
 	{
-		if (face->get()->onScroll(offset))
-			return true;
+		wasScrolled = (face->lock()->onScroll(offset));
 	}
 
+	return wasScrolled;
+}
+
+bool Face::cycleFocus()
+{
+	bool wasShifted = false;
+
+	if (m_isSelected)
+	{
+		m_isSelected = false;
+		if (m_children.size())
+		{
+			m_children[0].lock()->select();
+			wasShifted = true;
+		}
+	}
+	else
+	{
+		if (m_children.size())
+		{
+			wasShifted = m_children[m_focus].lock()->cycleFocus();
+		}
+	}
+
+	if (!wasShifted)
+	{
+		m_isSelected = false;
+		if (m_children.size() > 1)
+		{
+			m_children[m_focus].lock()->deselect();
+			m_focus++;
+			if (m_focus < m_children.size())
+			{
+				m_children[m_focus].lock()->select();
+				wasShifted = true;
+			}
+			else
+			{
+				m_focus = 0;
+			}
+		}
+		else if (m_children.size() == 1)
+		{
+			m_isSelected = true;
+		}
+	}
+
+	return wasShifted;
+}
+
+bool Face::shiftFocusLevel(bool down)
+{
 	return false;
 }
 
-void Face::addChild(std::shared_ptr<Face> pChild)
+bool Face::shiftFocus(glm::vec2 direction)
 {
-	m_children.push_back(pChild);
-	pChild->setParent(this);
-	pChild->setRect({ 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f, 100.0f });
+	return false;
 }
 
-void Face::removeChild(std::shared_ptr<Face> face)
+void Face::addChild(std::weak_ptr<Face> child)
 {
-	m_children.erase(std::find(m_children.begin(), m_children.end(), face));
+	m_children.push_back(child);
+	child.lock()->setParent(this);
+	child.lock()->setRect({ 0.0f, 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f, 100.0f });
 }
 
-void Face::setParent(Face* pParent)
+void Face::removeChild(std::weak_ptr<Face> face)
 {
-	m_pParent = pParent;
+	const auto position = std::find_if(m_children.begin(), m_children.end(), [&face](const std::weak_ptr<Face>& otherFace) {
+        return face.lock() == otherFace.lock();
+    });
+	
+	m_children.erase(position);
+	m_focus--;  // todo
+	if (m_focus < 0) m_focus = 0;
 }
 
 glm::vec4 Face::getRect()
@@ -110,10 +183,10 @@ void Face::setRect(glm::vec4 pixels, glm::vec4 percentage)
 	m_dimensions = { pixels.x + percentage.x / 100, pixels.y + percentage.y / 100, pixels.z + percentage.z / 100, pixels.w + percentage.w / 100 };
 }
 
-bool Face::isInBounds(glm::vec2 pos)
+bool Face::isInBounds(glm::vec2 position)
 {
-	if (pos.x > m_dimensions.x && pos.y > m_dimensions.y &&
-		pos.x < m_dimensions.x + m_dimensions.z && pos.y < m_dimensions.y + m_dimensions.w)
+	if (position.x > m_dimensions.x && position.y > m_dimensions.y &&
+		position.x < m_dimensions.x + m_dimensions.z && position.y < m_dimensions.y + m_dimensions.w)
 		return true;
 	else
 		return false;

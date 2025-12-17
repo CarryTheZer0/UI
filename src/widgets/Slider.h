@@ -13,7 +13,8 @@ public:
 
 	void draw(IPainter* pPainter) override;
 
-	bool onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
+	bool onSelect(bool down, int modifiers) override;
+
 	bool onCursorDragged(glm::vec2 offset) override;
     bool onScroll(glm::vec2 offset) override;
 

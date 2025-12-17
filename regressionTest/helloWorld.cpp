@@ -49,7 +49,7 @@ int main()
     s.loadShaderFromFile("../src/graphics/shaders/LineVertexShader.glsl", "../src/graphics/shaders/LineFragmentShader.glsl");
 
     Shader s2 = Shader();
-    s2.loadShaderFromFile("../src/graphics/shaders/TextVertexShader.glsl", "../src/graphics/shaders/TextFragmentShader.glsl");
+    s2.loadShaderFromFile("TextVertexShader.glsl", "TextFragmentShader.glsl");
 
     DebugRenderer renderer = DebugRenderer(s, s2, width, height);
     
@@ -93,17 +93,22 @@ int main()
     textBox->addChild(textBox2);
     textBox2->setRect(glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4());
 
-    std::shared_ptr<Slider> slider = std::make_shared<Slider>(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
-    panel->addChild(slider);
-    slider->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
+    std::function<void(float)> myfuncSlider = [](float val){std::cout << "slide " << val << std::endl;};
 
     std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
     panel->addChild(slider2);
     slider2->setRect(glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
+    slider2->setCallbackUpdate(myfuncSlider);
+
+    std::shared_ptr<Slider> slider = std::make_shared<Slider>(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
+    panel->addChild(slider);
+    slider->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
+    slider->setCallbackUpdate(myfuncSlider);
 
     std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
     slider->addChild(slider3);
     slider3->setRect(glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f));
+    slider3->setCallbackUpdate(myfuncSlider);
 
     temp_UI::InputHandler input = temp_UI::InputHandler(&root);
 
@@ -141,6 +146,12 @@ int main()
     {
         temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
         input->scrollCallback(x, y);
+    });
+
+    glfwSetKeyCallback( pWindow, []( GLFWwindow* window, int key, int scancode, int action, int mods )
+    {
+        temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
+        input->keyCallback(key, action, mods);
     });
 
     while(running) {

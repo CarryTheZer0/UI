@@ -22,17 +22,16 @@ Button::Button(glm::vec3 color, float margin) :
 
 void Button::draw(IPainter* pPainter)
 {
-	if (true)
-	{
-		pPainter->drawPanel(m_dimensions, m_color, m_margin);
-	}
+	if (m_isSelected)
+        pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), m_color, m_margin);
+    pPainter->drawPanel(m_dimensions, m_color, m_margin);
 
 	Face::draw(pPainter);
 }
 
-bool Button::onCursorButton(glm::vec2 pos, bool down, unsigned int button)
+bool Button::onSelect(bool down, int modifiers)
 {
-	if (Face::onCursorButton(pos, down, button)) return true;
+	if (Face::onSelect(down, modifiers)) return true;
 
 	if (down)
 	{

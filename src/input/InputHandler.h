@@ -5,6 +5,9 @@
  *  Mike
  */
 
+
+#include <map>
+
 class Face;
 
 namespace temp_UI {
@@ -14,8 +17,8 @@ namespace temp_UI {
         InputHandler(Face* pUiRoot);
         ~InputHandler() = default;
 
-        void keyCallback(int key, int scancode, int action, int mods);
-        void mouseCallback(int button, int action, int mods);
+        void keyCallback(int key, int action, int modifiers);
+        void mouseCallback(int button, int action, int modifiers);
         void mouseMoveCallback(double xPos, double yPos);
         void scrollCallback(float x, float y);
     private:
@@ -23,6 +26,8 @@ namespace temp_UI {
         float m_mouseY;
 
         Face* m_pUiRoot;
-        bool m_pressed;
+        std::map<int, bool> m_pressed;
+
+        void onInput(int id, int action, int modifiers);
     };
 }

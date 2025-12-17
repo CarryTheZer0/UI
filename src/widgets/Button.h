@@ -24,8 +24,8 @@ public:
 
 	void draw(IPainter* pPainter) override;
 
-	bool onCursorButton(glm::vec2 pos, bool down, unsigned int button) override;
-
+	bool onSelect(bool down, int modifiers) override;
+	
 	void setCallbackDown(std::function<void()> cb) {m_callbackDown = cb;}
 	void setCallbackUp(std::function<void()> cb) {m_callbackUp = cb;}
 protected:
