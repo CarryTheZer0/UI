@@ -1,17 +1,31 @@
+/*
+ *  Slider.cpp
+ *
+ *  Created on: 
+ *      Author: mchlp
+ */
 
 #include "Slider.h"
 
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
-Slider::Slider(glm::vec3 color, float margin, float min, float max) :
-	Face(),
+Slider::Slider(
+		Face& parent,
+		float min,
+		float max,
+		glm::vec4 pixels,
+		glm::vec4 percentage,
+		glm::vec3 color,
+		float margin
+) :
+	Face(parent, pixels, percentage),
 	m_held(false),
-	m_color(color),
-	m_margin(margin),
-    m_offset(0.0f),
     m_min(min),
-    m_max(max)
+    m_max(max),
+    m_offset(0.0f),
+	m_color(color),
+	m_margin(margin)
 {
     m_callbackUpdate = [](float f){ return; };
 }

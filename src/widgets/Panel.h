@@ -14,8 +14,14 @@
 class Panel : public Face
 {
 public:
-	Panel(glm::vec3 color, float margin=50.0f);
-	~Panel() = default;
+	Panel() = delete;
+	Panel(
+		Face& parent,
+		glm::vec4 pixels=glm::vec4(), 
+		glm::vec4 percentage=glm::vec4(),
+		glm::vec3 color=glm::vec3(1.0f),
+		float margin=50.0f
+	);
 
 	void draw(IPainter* pPainter) override;
 

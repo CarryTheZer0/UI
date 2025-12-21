@@ -11,8 +11,14 @@
 
 #include "Panel.h"
 
-Panel::Panel(glm::vec3 color, float margin) :
-	Face(),
+Panel::Panel(
+		Face& parent,
+		glm::vec4 pixels,
+		glm::vec4 percentage,
+		glm::vec3 color,
+		float margin
+) :
+	Face(parent, pixels, percentage),
 	m_margin(margin),
 	m_color(color)
 {}

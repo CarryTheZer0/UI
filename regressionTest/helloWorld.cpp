@@ -20,6 +20,7 @@
 #include "Slider.h"
 #include "Button.h"
 #include "TextBox.h"
+#include "Popup.h"
 
 /*
  *  General purpose testing script
@@ -67,48 +68,40 @@ int main()
     DebugPainter painter = DebugPainter(&renderer, "myPainter");
     Face root = Face(1024.0f, 768.0f);
 
-    std::shared_ptr<Panel> panel = std::make_shared<Panel>(glm::vec3(1.0f, 1.0f, 0.0f));
+    Panel panel = Panel(root, glm::vec4(), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     root.addChild(panel);
-    panel->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f));
 
-    std::shared_ptr<Button> button1 = std::make_shared<Button>(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
-    panel->addChild(button1);
-    button1->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(10.0f, 10.0f, 20.0f, 20.0f));
+    Button button1 = Button(panel, glm::vec4(50.0f, 0.0f,0.0f,0.0f), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f));
     std::function<void()> myfunc = [](){std::cout << "pressed 1" << std::endl;};
-    button1->setCallbackDown(myfunc);
+    button1.setCallbackDown(myfunc);
 
-    std::shared_ptr<Button> button2 = std::make_shared<Button>(glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
-    panel->addChild(button2);
+    Popup popup = Popup(panel, button1, glm::vec4(), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f), glm::vec3(1.0f, 0.0f, 1.0f), 30.0f);
+    panel.addChild(popup);
+
+    Button button2 = Button(panel, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f), glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
+    panel.addChild(button2);
     std::function<void()> myfunc2 = [](){std::cout << "pressed 2" << std::endl;};
-    button2->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f));
-    button2->setCallbackDown(myfunc2);
+    button2.setCallbackDown(myfunc2);
 
-    panel->removeChild(button1);
-
-    std::shared_ptr<TextBox> textBox = std::make_shared<TextBox>(glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
-    panel->addChild(textBox);
-    textBox->setRect(glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4());
-
-    std::shared_ptr<TextBox> textBox2 = std::make_shared<TextBox>(glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
-    textBox->addChild(textBox2);
-    textBox2->setRect(glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4());
+    TextBox textBox = TextBox(panel, glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
+    panel.addChild(textBox);
+    
+    TextBox textBox2 = TextBox(textBox, glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
+    textBox.addChild(textBox2);
 
     std::function<void(float)> myfuncSlider = [](float val){std::cout << "slide " << val << std::endl;};
 
-    std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
-    panel->addChild(slider2);
-    slider2->setRect(glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
-    slider2->setCallbackUpdate(myfuncSlider);
+    Slider slider = Slider(panel, 0.0f, 100.0f, glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
+    panel.addChild(slider);
+    slider.setCallbackUpdate(myfuncSlider);
 
-    std::shared_ptr<Slider> slider = std::make_shared<Slider>(glm::vec3(0.0f, 1.0f, 0.0f), 30.0f);
-    panel->addChild(slider);
-    slider->setRect(glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f));
-    slider->setCallbackUpdate(myfuncSlider);
+    Slider slider2 = Slider(panel, -1.0f, 1.0f, glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    panel.addChild(slider2);
+    slider2.setCallbackUpdate(myfuncSlider);
 
-    std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
-    slider->addChild(slider3);
-    slider3->setRect(glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f));
-    slider3->setCallbackUpdate(myfuncSlider);
+    Slider slider3 = Slider(slider2, 100.0f, 20.0f, glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
+    slider2.addChild(slider3);
+    slider3.setCallbackUpdate(myfuncSlider);
 
     temp_UI::InputHandler input = temp_UI::InputHandler(&root);
 
