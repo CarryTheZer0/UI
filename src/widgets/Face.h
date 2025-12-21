@@ -11,15 +11,21 @@
 #include <glm/glm.hpp>
 
 #include <vector>
-#include <memory>
 
 #include "IPainter.h"
 
 class Face
 {
 public:
-	Face();
-	Face(float width, float height);
+	Face() = delete;
+	Face(
+		Face& pParent, 
+		glm::vec4 pixels=glm::vec4(), 
+		glm::vec4 percentage=glm::vec4()
+	);
+	
+	Face(float width, float height, float x_offset=0.0f, float y_offset=0.0f);
+	
 	virtual ~Face();
 
 	virtual void draw(IPainter* pPainter);
@@ -34,14 +40,16 @@ public:
 	virtual bool shiftFocusLevel(bool down);
 	virtual bool shiftFocus(glm::vec2 direction);
 
-	void addChild(std::weak_ptr<Face> child);
-	void removeChild(std::weak_ptr<Face> face);
+	void addChild(Face& child);
+	void removeChild(Face& face);
 	
 	glm::vec4 getRect();
-	void setRect(glm::vec4 pixels, glm::vec4 percentage);
+	virtual void setRect(glm::vec4 pixels=glm::vec4(), glm::vec4 percentage=glm::vec4());
+
+	bool isSelected() { return m_isSelected; }
 protected:
-	Face* m_pParent;
-	std::vector<std::weak_ptr<Face>> m_children;
+	Face& m_parent;
+	std::vector<Face*> m_children;
 	int m_focus;
 
 	glm::vec4 m_dimensions;
@@ -51,8 +59,7 @@ protected:
 	bool isInBounds(glm::vec2 position);
 private:
 	void select() { m_isSelected = true; } 
-	void deselect() { m_isSelected = false; } 
-	void setParent(Face* pParent) { m_pParent = pParent; }
+	void deselect() { m_isSelected = false; }
 };
 
 #endif /* UI_FACE_H_ */

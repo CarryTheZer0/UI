@@ -19,8 +19,13 @@ public:
 	};
 
 	Button() = delete;
-	Button(glm::vec3 color, float margin=50.0f);
-	~Button() = default;
+	Button(
+		Face& parent,
+		glm::vec4 pixels=glm::vec4(), 
+		glm::vec4 percentage=glm::vec4(),
+		glm::vec3 color=glm::vec3(1.0f),
+		float margin=50.0f
+	);
 
 	void draw(IPainter* pPainter) override;
 

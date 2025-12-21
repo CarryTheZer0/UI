@@ -1,3 +1,12 @@
+/*
+ *  Slider.h
+ *
+ *  Created on: 
+ *      Author: mchlp
+ */
+
+#ifndef UI_SLIDER_H_
+#define UI_SLIDER_H_
 
 #include <functional>
 #include <glm/glm.hpp>
@@ -8,7 +17,15 @@ class Slider : public Face
 {
 public:
 	Slider() = delete;
-	Slider(glm::vec3 color, float margin=50.0f, float min=0.0f, float max=1.0f);
+	Slider(
+		Face& parent,
+		float min=0.0f,
+		float max=1.0f,
+		glm::vec4 pixels=glm::vec4(), 
+		glm::vec4 percentage=glm::vec4(),
+		glm::vec3 color=glm::vec3(1.0f),
+		float margin=50.0f
+	);
 	~Slider() = default;
 
 	void draw(IPainter* pPainter) override;
@@ -35,3 +52,5 @@ protected:
 private:
     void setOffset(float offset);
 };
+
+#endif /* UI_SLIDER_H_ */

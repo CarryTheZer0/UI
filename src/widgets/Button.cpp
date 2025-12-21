@@ -9,8 +9,14 @@
 
 #include "Button.h"
 
-Button::Button(glm::vec3 color, float margin) :
-	Face(),
+Button::Button(
+		Face& parent,
+		glm::vec4 pixels, 
+		glm::vec4 percentage,
+		glm::vec3 color,
+		float margin
+) :
+	Face(parent, pixels, percentage),
 	m_color(color),
 	m_margin(margin),
 	m_callbackDown(nullptr),
