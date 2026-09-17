@@ -21,6 +21,24 @@
 #include "Button.h"
 #include "TextBox.h"
 #include "Popup.h"
+#include "LineGraph.h"
+#include "Draggable.h"
+
+using namespace temp_UI;
+
+
+class ButtonListener : public IButtonListener
+{
+public:
+    ButtonListener() = default;
+
+    void invoke(bool down) override
+    {
+        if (down) std::cout << "down" << std::endl;
+        else std::cout << "up" << std::endl;
+    }
+};
+
 
 /*
  *  General purpose testing script
@@ -65,43 +83,48 @@ int main()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    DebugPainter painter = DebugPainter(&renderer, "myPainter");
+    DebugPainter painter = DebugPainter(&renderer);
     Face root = Face(1024.0f, 768.0f);
 
-    Panel panel = Panel(root, glm::vec4(), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    // LineGraph graph = LineGraph(root, -0.1f, 1.5f, glm::vec4(10.0f, 10.0f, 500.0f, 500.0f));
+    // graph.setData({0.5f,0.3f, 0.4f, 1.5f, -0.1f, 0.8f, 0.4f});
+    // root.addChild(graph);
+    
+    std::shared_ptr<Panel> panel = std::make_shared<Panel>(glm::vec4(), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     root.addChild(panel);
 
-    Button button1 = Button(panel, glm::vec4(50.0f, 0.0f,0.0f,0.0f), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f));
-    std::function<void()> myfunc = [](){std::cout << "pressed 1" << std::endl;};
-    button1.setCallbackDown(myfunc);
+    std::shared_ptr<Button> button1 = std::make_shared<Button>(glm::vec4(), glm::vec4(100.0f, 0.0f, 120.0f, 200.0f));
+    // ButtonListener listener = ButtonListener();
+    ButtonListener listener = button1->addListener<ButtonListener>();
 
-    Popup popup = Popup(panel, button1, glm::vec4(), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f), glm::vec3(1.0f, 0.0f, 1.0f), 30.0f);
-    panel.addChild(popup);
+    std::shared_ptr<Popup> popup = std::make_shared<Popup>(button1, glm::vec4(), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f), glm::vec3(1.0f, 0.0f, 1.0f), 30.0f);
+    panel->addChild(popup);
 
-    Button button2 = Button(panel, glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f), glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
-    panel.addChild(button2);
-    std::function<void()> myfunc2 = [](){std::cout << "pressed 2" << std::endl;};
-    button2.setCallbackDown(myfunc2);
-
-    TextBox textBox = TextBox(panel, glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
-    panel.addChild(textBox);
+    std::shared_ptr<TextBox> textBox = std::make_shared<TextBox>(glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
+    panel->addChild(textBox);
     
-    TextBox textBox2 = TextBox(textBox, glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
-    textBox.addChild(textBox2);
+    std::shared_ptr<TextBox> textBox2 = std::make_shared<TextBox>(glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
+    textBox->addChild(textBox2);
 
     std::function<void(float)> myfuncSlider = [](float val){std::cout << "slide " << val << std::endl;};
 
-    Slider slider = Slider(panel, 0.0f, 100.0f, glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
-    panel.addChild(slider);
-    slider.setCallbackUpdate(myfuncSlider);
+    std::shared_ptr<Slider> slider = std::make_shared<Slider>(0.0f, 100.0f, glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
+    panel->addChild(slider);
+    slider->setCallbackUpdate(myfuncSlider);
 
-    Slider slider2 = Slider(panel, -1.0f, 1.0f, glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    panel.addChild(slider2);
-    slider2.setCallbackUpdate(myfuncSlider);
+    std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(-1.0f, 1.0f, glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    panel->addChild(slider2);
+    slider2->setCallbackUpdate(myfuncSlider);
 
-    Slider slider3 = Slider(slider2, 100.0f, 20.0f, glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
-    slider2.addChild(slider3);
-    slider3.setCallbackUpdate(myfuncSlider);
+    std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(100.0f, 20.0f, glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
+    slider2->addChild(slider3);
+    slider3->setCallbackUpdate(myfuncSlider);
+
+    std::shared_ptr<Draggable> drag = std::make_shared<Draggable>(glm::vec4(0.0f, 0.0f, 50.0f, 50.0f), glm::vec4(90.0f, 90.0f, 0.0f, 0.0f), true);
+    panel->addChild(drag);
+
+    std::shared_ptr<Button> button2 = std::make_shared<Button>(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f), glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
+    drag->addChild(button2);
 
     temp_UI::InputHandler input = temp_UI::InputHandler(&root);
 

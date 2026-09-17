@@ -11,13 +11,12 @@
 #include "TextBox.h"
 
 TextBox::TextBox(
-		Face& parent,
 		glm::vec4 pixels,
 		glm::vec4 percentage,
 		glm::vec3 color,
 		float margin
 ) :
-	Face(parent, pixels, percentage),
+	Face(pixels, percentage),
 	m_margin(margin),
 	m_color(color)
 {}

@@ -18,7 +18,6 @@ class Slider : public Face
 public:
 	Slider() = delete;
 	Slider(
-		Face& parent,
 		float min=0.0f,
 		float max=1.0f,
 		glm::vec4 pixels=glm::vec4(), 
@@ -43,7 +42,7 @@ public:
 protected:
 	glm::vec3 m_color;
 	float m_margin;
-    bool m_held;
+    bool m_isHeld;
     float m_offset, m_min, m_max;
 
 	float m_value;

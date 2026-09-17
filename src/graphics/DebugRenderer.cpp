@@ -12,6 +12,9 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+
+namespace temp_UI {
+
 struct line
 {
 	float x1; float y1; float r1; float g1; float b1;
@@ -348,4 +351,6 @@ void DebugRenderer::draw()
 {
 	drawLines();
 	drawQuads();
+}
+
 }

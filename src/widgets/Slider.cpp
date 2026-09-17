@@ -11,7 +11,6 @@
 #include <iostream>
 
 Slider::Slider(
-		Face& parent,
 		float min,
 		float max,
 		glm::vec4 pixels,
@@ -19,8 +18,8 @@ Slider::Slider(
 		glm::vec3 color,
 		float margin
 ) :
-	Face(parent, pixels, percentage),
-	m_held(false),
+	Face(pixels, percentage),
+	m_isHeld(false),
     m_min(min),
     m_max(max),
     m_offset(0.0f),
@@ -46,12 +45,12 @@ bool Slider::onSelect(bool down, int modifiers)
 	
     if (!down)
     {
-        m_held = false;
+        m_isHeld = false;
         return false;
     }
     else if (m_isSelected)
     {
-        m_held = true;
+        m_isHeld = true;
         return true;
     }
 
@@ -62,7 +61,7 @@ bool Slider::onCursorDragged(glm::vec2 offset)
 {
     if (Face::onCursorDragged(offset)) return true;
 
-    if (m_held)
+    if (m_isHeld)
     {
         setOffset(offset.x);
         updateValue();

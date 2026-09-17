@@ -8,14 +8,13 @@
 #include "Popup.h"
 
 Popup::Popup(
-		Face& parent,
-        Face& content,
+        std::shared_ptr<Face> content,
 		glm::vec4 pixels,
 		glm::vec4 percentage,
 		glm::vec3 color,
 		float margin
 ) :
-	Face(parent, pixels, percentage),
+	Face(pixels, percentage),
     m_content(content),
 	m_color(color),
 	m_margin(margin),
@@ -39,7 +38,7 @@ bool Popup::onCursorMoved(glm::vec2 position)
         addChild(m_content);
         m_isActive = true;
     }
-    else if (!m_isSelected && !m_content.isSelected())
+    else if (!m_isSelected && !m_content->isSelected())
     {
         if (m_isActive) removeChild(m_content);
         m_isActive = false;
@@ -48,8 +47,3 @@ bool Popup::onCursorMoved(glm::vec2 position)
     return wasSelected;
 }
 
-void Popup::setRect(glm::vec4 pixels, glm::vec4 percentage)
-{
-    Face::setRect(pixels, percentage);
-    m_content.setRect(pixels, percentage);
-}

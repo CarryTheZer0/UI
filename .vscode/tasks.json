@@ -7,9 +7,9 @@
             "args": [
                 "-g",
                 "${fileDirname}\\${fileBasenameNoExtension}.cpp",
+                "${workspaceFolder}\\src\\widgets\\*.cpp",
                 "${workspaceFolder}\\src\\input\\*.cpp",
                 "${workspaceFolder}\\src\\graphics\\*.cpp",
-                "${workspaceFolder}\\archive\\*.cpp",
                 "${workspaceFolder}\\lib\\libUi.a",
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
@@ -17,7 +17,6 @@
                 "-I${workspaceFolder}\\src\\graphics",
                 "-I${workspaceFolder}\\src\\widgets",
                 "-I${workspaceFolder}\\src\\input",
-                "-I${workspaceFolder}\\archive",
                 "-IC:\\Clib\\glew-2.1.0\\include",
                 "-IC:\\Clib\\glfw-3.4.bin.WIN64\\include",
                 "-IC:\\Clib\\glm",
@@ -99,7 +98,7 @@
             "command": "copy",
             "args": [
                  "src/*.h,src/*/*.h,src/*/*/*.h",
-                 "include"
+                 "include/ui"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

@@ -15,6 +15,9 @@
 
 #include "Shader.h"
 
+
+namespace temp_UI {
+
 class DebugRenderer
 {
 public:
@@ -67,5 +70,7 @@ private:
     // Initialises fonts
     void initFont();
 };
+
+}
 
 #endif /* SRC_GRAPHICS_DEBUGRENDERER_H_ */
