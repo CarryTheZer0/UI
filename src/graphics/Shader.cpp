@@ -12,6 +12,8 @@
 #include "Shader.h"
 
 
+namespace temp_UI {
+
 void Shader::use()
 {
     glUseProgram(m_ID);
@@ -112,4 +114,6 @@ void Shader::checkCompileErrors(unsigned int object, std::string type)
                 << std::endl;
         }
     }
+}
+
 }

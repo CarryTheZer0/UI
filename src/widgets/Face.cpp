@@ -10,19 +10,20 @@
 
 #include "Face.h"
 
-Face::Face(Face& parent, glm::vec4 pixels, glm::vec4 percentage) :
-	m_parent(parent),
+Face::Face(glm::vec4 pixels, glm::vec4 percentage) :
+	m_pixels(pixels),
+	m_percentage(percentage),
 	m_focus(0),
 	m_isSelected(false)
-{
-	setRect(pixels, percentage);
-}
+{}
 
 Face::Face(float width, float height, float x_offset, float y_offset) :
-	m_parent(*this),
 	m_isSelected(false),
 	m_focus(0),
-	m_dimensions(x_offset, y_offset, width, height)
+	m_dimensions(x_offset, y_offset, width, height),
+	m_parentDimensions(),
+	m_pixels(x_offset, y_offset, width, height),
+	m_percentage()
 {}
 
 Face::~Face()
@@ -151,15 +152,17 @@ bool Face::shiftFocus(glm::vec2 direction)
 	return false;
 }
 
-void Face::addChild(Face& child)
+void Face::addChild(std::shared_ptr<Face> child)
 {
-	m_children.push_back(&child);
+	child->m_parentDimensions = m_dimensions;
+	child->setRect();
+	m_children.push_back(child);
 }
 
-void Face::removeChild(Face& face)
+void Face::removeChild(std::shared_ptr<Face> face)
 {
-	const auto position = std::find_if(m_children.begin(), m_children.end(), [&face](const Face* otherFace) {
-        return &face == otherFace;
+	const auto position = std::find_if(m_children.begin(), m_children.end(), [face](const std::shared_ptr<Face> otherFace) {
+        return face.get() == otherFace.get();
     });
 	
 	m_children.erase(position);
@@ -172,18 +175,41 @@ glm::vec4 Face::getRect()
 	return m_dimensions;
 }
 
-void Face::setRect(glm::vec4 pixels, glm::vec4 percentage)
+void Face::setRect()
 {
-	glm::vec4 dimensions = m_parent.getRect();
+	m_dimensions = m_parentDimensions;
 
-	pixels.x += dimensions.x;
-	pixels.y += dimensions.y;
-	percentage.x *= dimensions.z;
-	percentage.y *= dimensions.w;
-	percentage.z *= dimensions.z;
-	percentage.w *= dimensions.w;
+	m_dimensions.x += (m_percentage.x / 100.0f) * m_dimensions.z;
+	m_dimensions.y += (m_percentage.y / 100.0f) * m_dimensions.w;
+	m_dimensions.z *= m_percentage.z / 100.0f;
+	m_dimensions.w *= m_percentage.w / 100.0f;
+	
+	m_dimensions.x += m_pixels.x;
+	m_dimensions.y += m_pixels.y;
+	m_dimensions.z += m_pixels.z;
+	m_dimensions.w += m_pixels.w;
 
-	m_dimensions = { pixels.x + percentage.x / 100, pixels.y + percentage.y / 100, pixels.z + percentage.z / 100, pixels.w + percentage.w / 100 };
+	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+	{
+		(*face)->m_parentDimensions = m_dimensions;
+		(*face)->setRect();
+	}
+}
+
+glm::vec2 Face::getCentre()
+{
+	return glm::vec2(m_dimensions.x + m_dimensions.z / 2, m_dimensions.y + m_dimensions.w / 2);
+}
+
+void Face::move(glm::vec2 transform)
+{
+	// do move
+	m_dimensions.x += transform.x;
+	m_dimensions.y += transform.y;
+	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+	{
+		(*face)->move(transform);
+	}
 }
 
 bool Face::isInBounds(glm::vec2 position)

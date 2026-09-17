@@ -15,6 +15,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+namespace temp_UI {
+
 class Shader
 {
 public:
@@ -31,5 +33,7 @@ private:
     void checkCompileErrors(unsigned int object, std::string type);
     void compile(const char* vertexSource, const char* fragmentSource);
 };
+
+}
 
 #endif /* UI_SHADER_H_ */

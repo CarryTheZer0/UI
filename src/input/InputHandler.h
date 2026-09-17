@@ -5,29 +5,35 @@
  *  Mike
  */
 
+#ifndef UI_INPUT_HANDLER_H_
+#define UI_INPUT_HANDLER_H_
 
 #include <map>
 
 class Face;
 
 namespace temp_UI {
-    class InputHandler {
-    public:
-        InputHandler() = delete;
-        InputHandler(Face* pUiRoot);
-        ~InputHandler() = default;
 
-        void keyCallback(int key, int action, int modifiers);
-        void mouseCallback(int button, int action, int modifiers);
-        void mouseMoveCallback(double xPos, double yPos);
-        void scrollCallback(float x, float y);
-    private:
-        float m_mouseX;
-        float m_mouseY;
+class InputHandler {
+public:
+    InputHandler() = delete;
+    InputHandler(Face* pUiRoot);
+    ~InputHandler() = default;
 
-        Face* m_pUiRoot;
-        std::map<int, bool> m_pressed;
+    void keyCallback(int key, int action, int modifiers);
+    void mouseCallback(int button, int action, int modifiers);
+    void mouseMoveCallback(double xPos, double yPos);
+    void scrollCallback(float x, float y);
+private:
+    float m_mouseX;
+    float m_mouseY;
 
-        void onInput(int id, int action, int modifiers);
-    };
+    Face* m_pUiRoot;
+    std::map<int, bool> m_pressed;
+
+    void onInput(int id, int action, int modifiers);
+};
+
 }
+
+#endif  /* UI_INPUT_HANDLER_H_ */

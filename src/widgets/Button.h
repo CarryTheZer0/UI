@@ -9,18 +9,26 @@
 #define UI_BUTTON_H_
 
 #include <functional>
+
 #include "Face.h"
+
+
+class IButtonListener
+{
+public:
+    virtual ~IButtonListener() = 0;
+
+	virtual void invoke(bool down) = 0;
+};
+
+inline IButtonListener::~IButtonListener() {}
+
 
 class Button : public Face
 {
 public:
-	enum ButtonState {
-		Selected, Held
-	};
-
 	Button() = delete;
 	Button(
-		Face& parent,
 		glm::vec4 pixels=glm::vec4(), 
 		glm::vec4 percentage=glm::vec4(),
 		glm::vec3 color=glm::vec3(1.0f),
@@ -31,15 +39,23 @@ public:
 
 	bool onSelect(bool down, int modifiers) override;
 	
-	void setCallbackDown(std::function<void()> cb) {m_callbackDown = cb;}
-	void setCallbackUp(std::function<void()> cb) {m_callbackUp = cb;}
+	template <class ListenerType>
+	ListenerType& addListener() { 
+		m_listeners.push_back(std::make_unique<ListenerType>()); 
+		return *dynamic_cast<ListenerType*>(m_listeners.back().get()); 
+	}
+	
+	void removeListener(IButtonListener& listenerA)
+	{
+		auto it = std::find_if(m_listeners.begin(), m_listeners.end(), [&](std::unique_ptr<IButtonListener>& listenerB){ return &listenerA == listenerB.get(); });
+		m_listeners.erase(it);
+	}
 protected:
 	glm::vec3 m_color;
 	float m_margin;
 	bool m_isHeld;
 
-	std::function<void()> m_callbackDown;
-	std::function<void()> m_callbackUp;
+	std::vector<std::unique_ptr<IButtonListener>> m_listeners;
 };
 
 #endif /* UI_BUTTON_H_ */

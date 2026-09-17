@@ -16,7 +16,6 @@ class TextBox : public Face
 public:
 	TextBox() = delete;
 	TextBox(
-		Face& parent,
 		glm::vec4 pixels=glm::vec4(), 
 		glm::vec4 percentage=glm::vec4(),
 		glm::vec3 color=glm::vec3(1.0f),

@@ -10,21 +10,15 @@
 #include "Button.h"
 
 Button::Button(
-		Face& parent,
 		glm::vec4 pixels, 
 		glm::vec4 percentage,
 		glm::vec3 color,
 		float margin
 ) :
-	Face(parent, pixels, percentage),
+	Face(pixels, percentage),
 	m_color(color),
-	m_margin(margin),
-	m_callbackDown(nullptr),
-	m_callbackUp(nullptr)
-{
-	m_callbackDown = []{return;};
-	m_callbackUp = []{return;};
-}
+	m_margin(margin)
+{}
 
 void Button::draw(IPainter* pPainter)
 {
@@ -43,14 +37,14 @@ bool Button::onSelect(bool down, int modifiers)
 	{
 		if (m_isSelected)
 		{
-			m_callbackDown();
+			for (auto& l : m_listeners) l->invoke(true);
 			m_isHeld = true;
 			return true;
 		}
 	}
 	else if (m_isHeld)
 	{
-		m_callbackUp();
+		for (auto& l : m_listeners) l->invoke(false);
 		m_isHeld = false;
 		return false;
 	}
