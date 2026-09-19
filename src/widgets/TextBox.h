@@ -22,12 +22,19 @@ public:
 		float margin=50.0f
 	);
 
+	bool onTextInput(char character) override;
+
 	void draw(IPainter* pPainter) override;
 
 	float getMargin() { return this->m_margin; }
+
+	std::string getText() { return m_text; }
+	void append(std::string text) { m_text += text; }
+	void setText(std::string text) { m_text = text; }
 protected:
 	float m_margin;
 	glm::vec3 m_color;
+	std::string m_text;
 };
 
 #endif /* UI_TEXTBOX_H_ */

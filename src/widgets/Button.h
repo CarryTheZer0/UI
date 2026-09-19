@@ -30,9 +30,7 @@ public:
 	Button() = delete;
 	Button(
 		glm::vec4 pixels=glm::vec4(), 
-		glm::vec4 percentage=glm::vec4(),
-		glm::vec3 color=glm::vec3(1.0f),
-		float margin=50.0f
+		glm::vec4 percentage=glm::vec4()
 	);
 
 	void draw(IPainter* pPainter) override;
@@ -40,9 +38,9 @@ public:
 	bool onSelect(bool down, int modifiers) override;
 	
 	template <class ListenerType>
-	ListenerType& addListener() { 
+	ListenerType* addListener() { 
 		m_listeners.push_back(std::make_unique<ListenerType>()); 
-		return *dynamic_cast<ListenerType*>(m_listeners.back().get()); 
+		return dynamic_cast<ListenerType*>(m_listeners.back().get()); 
 	}
 	
 	void removeListener(IButtonListener& listenerA)
@@ -52,7 +50,6 @@ public:
 	}
 protected:
 	glm::vec3 m_color;
-	float m_margin;
 	bool m_isHeld;
 
 	std::vector<std::unique_ptr<IButtonListener>> m_listeners;

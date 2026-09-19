@@ -44,7 +44,7 @@ void LineGraph::draw(IPainter* pPainter)
         pPainter->drawLine(prev, current, m_color);
         prev = current;
     }
-    if (m_isSelected)
+    if (isFocused())
         pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), m_color, 0.0f);
     pPainter->drawPanel(m_dimensions, m_color, 0.0f);
 }

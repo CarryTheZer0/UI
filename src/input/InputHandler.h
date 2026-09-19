@@ -24,6 +24,7 @@ public:
     void mouseCallback(int button, int action, int modifiers);
     void mouseMoveCallback(double xPos, double yPos);
     void scrollCallback(float x, float y);
+    void charCallback(unsigned int codepoint);
 private:
     float m_mouseX;
     float m_mouseY;

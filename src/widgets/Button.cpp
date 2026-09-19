@@ -11,20 +11,18 @@
 
 Button::Button(
 		glm::vec4 pixels, 
-		glm::vec4 percentage,
-		glm::vec3 color,
-		float margin
+		glm::vec4 percentage
 ) :
 	Face(pixels, percentage),
-	m_color(color),
-	m_margin(margin)
+	m_color(0.8f, 0.5f, 0.4f),
+	m_isHeld(false)
 {}
 
 void Button::draw(IPainter* pPainter)
 {
-	if (m_isSelected)
-        pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), m_color, m_margin);
-    pPainter->drawPanel(m_dimensions, m_color, m_margin);
+	if (isFocused())
+        pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), m_color, 10.0f);
+    pPainter->drawPanel(m_dimensions, m_color, 10.0f);
 
 	Face::draw(pPainter);
 }
@@ -35,7 +33,7 @@ bool Button::onSelect(bool down, int modifiers)
 
 	if (down)
 	{
-		if (m_isSelected)
+		if (isFocused())
 		{
 			for (auto& l : m_listeners) l->invoke(true);
 			m_isHeld = true;
