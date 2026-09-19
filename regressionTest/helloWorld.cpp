@@ -6,7 +6,6 @@
  */
 
 #include <iostream>
-#include <nlohmann/json.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <math.h>
@@ -26,7 +25,6 @@
 #include "Draggable.h"
 
 using namespace temp_UI;
-using json = nlohmann::json;
 
 class ButtonListener : public IButtonListener
 {
@@ -38,7 +36,6 @@ public:
     {
         if (down)
         {
-            json test;
             std::string next = "123";
             textBox->append(next);
         }

@@ -12,7 +12,6 @@
                 "C:/Clib/glfw-3.3.8/include",
                 "C:/Clib/glew-2.1.0/include",
                 "C://Clib/libfreetype2/freetype2/include"
-                "C://Clib//json//include",
             ],
             "defines": [
                 "_DEBUG",
