@@ -8,22 +8,19 @@
 #include "Popup.h"
 
 Popup::Popup(
-        std::shared_ptr<Face> content,
-		glm::vec4 pixels,
-		glm::vec4 percentage,
-		glm::vec3 color,
-		float margin
+    glm::vec4 pixels, 
+    glm::vec4 percentage,
+    glm::vec3 color,
+    float margin
 ) :
 	Face(pixels, percentage),
-    m_content(content),
-	m_color(color),
-	m_margin(margin),
-    m_isActive(false)
+    m_color(color),
+    m_margin(margin)
 {}
 
 void Popup::draw(IPainter* pPainter)
 {
-    if (m_isSelected)
+    if (isFocused())
         pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), m_color, m_margin);
 	pPainter->drawPanel(m_dimensions, m_color, m_margin);
 	Face::draw(pPainter);
@@ -31,19 +28,24 @@ void Popup::draw(IPainter* pPainter)
 
 bool Popup::onCursorMoved(glm::vec2 position)
 {
-    bool wasSelected = (Face::onCursorMoved(position));
+    bool wasFocused = (Face::onCursorMoved(position));
 
-    if (m_isSelected && !m_isActive)
+    bool childFocused = false;
+    for (auto face = m_children.rbegin(); face != m_children.rend(); ++face) 
+        if ((*face)->isFocused()) childFocused = true;
+
+    if (isFocused())
     {
-        addChild(m_content);
-        m_isActive = true;
+        for (auto face = m_children.rbegin(); face != m_children.rend(); ++face) (*face)->setActive(true);
     }
-    else if (!m_isSelected && !m_content->isSelected())
+    else if (!childFocused)
     {
-        if (m_isActive) removeChild(m_content);
-        m_isActive = false;
+        for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+        {
+            (*face)->setActive(false);
+        }
     }
     
-    return wasSelected;
+    return wasFocused;
 }
 

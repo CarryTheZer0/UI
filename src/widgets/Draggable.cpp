@@ -26,7 +26,7 @@ bool Draggable::onSelect(bool down, int modifiers)
         m_isHeld = false;
         return false;
     }
-    else if (m_isSelected)
+    else if (isFocused())
     {
         m_isHeld = true;
         return true;
@@ -57,7 +57,7 @@ bool Draggable::onCursorDragged(glm::vec2 offset)
 
 void Draggable::draw(IPainter* pPainter)
 {
-    if (m_isSelected)
+    if (isFocused())
         pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), glm::vec3(1.0f), 0);
 	pPainter->drawPanel(m_dimensions, glm::vec3(1.0f), 0);
 	Face::draw(pPainter);

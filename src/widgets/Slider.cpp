@@ -11,10 +11,10 @@
 #include <iostream>
 
 Slider::Slider(
-		float min,
-		float max,
 		glm::vec4 pixels,
 		glm::vec4 percentage,
+		float min,
+		float max,
 		glm::vec3 color,
 		float margin
 ) :
@@ -31,7 +31,7 @@ Slider::Slider(
 
 void Slider::draw(IPainter* pPainter)
 {
-	if (m_isSelected)
+	if (isFocused())
         pPainter->drawPanel(glm::vec4(m_dimensions.x - 1, m_dimensions.y - 1, m_dimensions.z + 2, m_dimensions.w + 2), m_color, m_margin);
     pPainter->drawPanel(m_dimensions, m_color, m_margin);
     pPainter->drawPanel(glm::vec4(m_dimensions.x + m_offset, m_dimensions.y, m_dimensions.w, m_dimensions.w), m_color, m_margin);
@@ -48,7 +48,7 @@ bool Slider::onSelect(bool down, int modifiers)
         m_isHeld = false;
         return false;
     }
-    else if (m_isSelected)
+    else if (isFocused())
     {
         m_isHeld = true;
         return true;
@@ -75,7 +75,7 @@ bool Slider::onScroll(glm::vec2 offset)
 {
     if (Face::onScroll(offset)) return true;
 
-	if (m_isSelected)
+	if (isFocused())
     {
         setOffset(offset.y);
         updateValue();

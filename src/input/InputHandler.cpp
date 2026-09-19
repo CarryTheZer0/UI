@@ -42,6 +42,11 @@ void InputHandler::scrollCallback(float x, float y)
     m_pUiRoot->onScroll(glm::vec2(x, y));
 }
 
+void InputHandler::charCallback(unsigned int codepoint)
+{
+    m_pUiRoot->onTextInput(codepoint);
+}
+
 void InputHandler::onInput(int id, int action, int modifiers)
 {
     if (!m_pressed.count(id)) m_pressed[id] = false;

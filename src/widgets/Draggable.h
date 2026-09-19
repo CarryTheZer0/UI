@@ -17,7 +17,7 @@ public:
 	Draggable(
 		glm::vec4 pixels=glm::vec4(), 
 		glm::vec4 percentage=glm::vec4(),
-        bool clampToParent=true
+        bool clampToParent=false
 	);
 
     bool onSelect(bool down, int modifiers) override;

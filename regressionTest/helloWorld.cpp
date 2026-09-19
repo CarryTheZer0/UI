@@ -26,17 +26,22 @@
 
 using namespace temp_UI;
 
-
 class ButtonListener : public IButtonListener
 {
 public:
     ButtonListener() = default;
+    ~ButtonListener() {}
 
     void invoke(bool down) override
     {
-        if (down) std::cout << "down" << std::endl;
-        else std::cout << "up" << std::endl;
+        if (down)
+        {
+            std::string next = "123";
+            textBox->append(next);
+        }
     }
+
+    TextBox* textBox;
 };
 
 
@@ -89,43 +94,34 @@ int main()
     // LineGraph graph = LineGraph(root, -0.1f, 1.5f, glm::vec4(10.0f, 10.0f, 500.0f, 500.0f));
     // graph.setData({0.5f,0.3f, 0.4f, 1.5f, -0.1f, 0.8f, 0.4f});
     // root.addChild(graph);
-    
-    std::shared_ptr<Panel> panel = std::make_shared<Panel>(glm::vec4(), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-    root.addChild(panel);
 
-    std::shared_ptr<Button> button1 = std::make_shared<Button>(glm::vec4(), glm::vec4(100.0f, 0.0f, 120.0f, 200.0f));
-    // ButtonListener listener = ButtonListener();
-    ButtonListener listener = button1->addListener<ButtonListener>();
+    Panel& panel = root.addChild<Panel>(glm::vec4(), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    Popup& popup = panel.addChild<Popup>(glm::vec4(), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f), glm::vec3(1.0f, 0.0f, 1.0f), 30.0f);
 
-    std::shared_ptr<Popup> popup = std::make_shared<Popup>(button1, glm::vec4(), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f), glm::vec3(1.0f, 0.0f, 1.0f), 30.0f);
-    panel->addChild(popup);
+    TextBox& textBox = panel.addChild<TextBox>(glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
+    Button& button = popup.addChild<Button>(glm::vec4(), glm::vec4(100.0f, 0.0f, 120.0f, 200.0f));
+    ButtonListener* pListener = button.addListener<ButtonListener>();
+    pListener->textBox = &textBox;
 
-    std::shared_ptr<TextBox> textBox = std::make_shared<TextBox>(glm::vec4(10.0f, 10.0f, 100.0f, 50.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 0.0f), 10.0f);
-    panel->addChild(textBox);
-    
-    std::shared_ptr<TextBox> textBox2 = std::make_shared<TextBox>(glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
-    textBox->addChild(textBox2);
+    TextBox& textBox2 = textBox.addChild<TextBox>(glm::vec4(10.0f, 10.0f, 80.0f, 30.0f), glm::vec4(), glm::vec3(1.0f, 1.0f, 1.0f), 10.0f);
 
     std::function<void(float)> myfuncSlider = [](float val){std::cout << "slide " << val << std::endl;};
+    Slider& slider = panel.addChild<Slider>(glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), 0.0f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
+    slider.setCallbackUpdate(myfuncSlider);
 
-    std::shared_ptr<Slider> slider = std::make_shared<Slider>(0.0f, 100.0f, glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
-    panel->addChild(slider);
-    slider->setCallbackUpdate(myfuncSlider);
+    // std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(-1.0f, 1.0f, glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    // panel->addChild(slider2);
+    // slider2->setCallbackUpdate(myfuncSlider);
 
-    std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(-1.0f, 1.0f, glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    panel->addChild(slider2);
-    slider2->setCallbackUpdate(myfuncSlider);
+    // std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(100.0f, 20.0f, glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
+    // slider2->addChild(slider3);
+    // slider3->setCallbackUpdate(myfuncSlider);
 
-    std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(100.0f, 20.0f, glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
-    slider2->addChild(slider3);
-    slider3->setCallbackUpdate(myfuncSlider);
+    Draggable& drag = popup.addChild<Draggable>(glm::vec4(0.0f, 0.0f, 50.0f, 50.0f), glm::vec4(90.0f, 90.0f, 0.0f, 0.0f), true);
 
-    std::shared_ptr<Draggable> drag = std::make_shared<Draggable>(glm::vec4(0.0f, 0.0f, 50.0f, 50.0f), glm::vec4(90.0f, 90.0f, 0.0f, 0.0f), true);
-    panel->addChild(drag);
-
-    std::shared_ptr<Button> button2 = std::make_shared<Button>(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f), glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
-    drag->addChild(button2);
-
+    // {std::shared_ptr<Button> button2 = std::make_shared<Button>(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f), glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
+    // drag->addChild(button2);
+    // drag->removeChild(button2);}
     temp_UI::InputHandler input = temp_UI::InputHandler(&root);
 
     glfwSetWindowUserPointer( pWindow, &input );
@@ -168,6 +164,11 @@ int main()
     {
         temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
         input->keyCallback(key, action, mods);
+    });
+
+    glfwSetCharCallback( pWindow, []( GLFWwindow* window, unsigned int codepoint) {
+        temp_UI::InputHandler* input = static_cast<temp_UI::InputHandler*>( glfwGetWindowUserPointer( window ) );
+        input->charCallback(codepoint);
     });
 
     while(running) {
