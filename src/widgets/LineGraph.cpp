@@ -10,10 +10,10 @@
 
 
 LineGraph::LineGraph(
-    float min,    
-    float max,
 	glm::vec4 pixels, 
 	glm::vec4 percentage,
+    float min,    
+    float max,
 	glm::vec3 color
 ) :
 	Face(pixels, percentage),

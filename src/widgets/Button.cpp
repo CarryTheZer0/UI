@@ -5,7 +5,7 @@
  *      Author: mchlp
  */
 
-#include <glm/gtx/string_cast.hpp>
+// #include <glm/gtx/string_cast.hpp> TODO remove
 
 #include "Button.h"
 
@@ -27,25 +27,19 @@ void Button::draw(IPainter* pPainter)
 	Face::draw(pPainter);
 }
 
-bool Button::onSelect(bool down, int modifiers)
+void Button::onSelect(bool down, int modifiers)
 {
-	if (Face::onSelect(down, modifiers)) return true;
-
 	if (down)
 	{
 		if (isFocused())
 		{
 			for (auto& l : m_listeners) l->invoke(true);
 			m_isHeld = true;
-			return true;
 		}
 	}
 	else if (m_isHeld)
 	{
 		for (auto& l : m_listeners) l->invoke(false);
 		m_isHeld = false;
-		return false;
 	}
-
-	return false;
 }

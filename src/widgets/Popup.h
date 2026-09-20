@@ -20,7 +20,8 @@ public:
 
     void draw(IPainter* pPainter) override;
 
-    bool onCursorMoved(glm::vec2 position) override;
+    void onFocused() override;
+    void onUnfocused() override;
 
     template <class FaceType, class... ValueTypes>
 	FaceType& addChild(

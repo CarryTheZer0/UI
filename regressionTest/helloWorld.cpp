@@ -91,9 +91,9 @@ int main()
     DebugPainter painter = DebugPainter(&renderer);
     Face root = Face(1024.0f, 768.0f);
 
-    // LineGraph graph = LineGraph(root, -0.1f, 1.5f, glm::vec4(10.0f, 10.0f, 500.0f, 500.0f));
-    // graph.setData({0.5f,0.3f, 0.4f, 1.5f, -0.1f, 0.8f, 0.4f});
-    // root.addChild(graph);
+    LineGraph& graph = root.addChild<LineGraph>(glm::vec4(0.0f, 0.0f, 80.0f, 80.0f), glm::vec4(80.0f, 80.0f, 0.0f, 0.0f), -0.1f, 1.5f);
+    std::vector<float> data = {0.5f, 0.3f, 0.4f, 1.5f, -0.1f, 0.8f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+    graph.setData(data);
 
     Panel& panel = root.addChild<Panel>(glm::vec4(), glm::vec4(5.0f, 5.0f, 90.0f, 90.0f), glm::vec3(1.0f, 1.0f, 0.0f));
     Popup& popup = panel.addChild<Popup>(glm::vec4(), glm::vec4(50.0f, 40.0f, 5.0f, 5.0f), glm::vec3(1.0f, 0.0f, 1.0f), 30.0f);
@@ -109,19 +109,15 @@ int main()
     Slider& slider = panel.addChild<Slider>(glm::vec4(0.0f, 30.0f, 0.0f, 10.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), 0.0f, 100.0f, glm::vec3(0.0f, 0.0f, 1.0f), 30.0f);
     slider.setCallbackUpdate(myfuncSlider);
 
-    // std::shared_ptr<Slider> slider2 = std::make_shared<Slider>(-1.0f, 1.0f, glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    // panel->addChild(slider2);
-    // slider2->setCallbackUpdate(myfuncSlider);
+    Slider& slider2 = panel.addChild<Slider>(glm::vec4(0.0f, 0.0f, 0.0f, 50.0f), glm::vec4(10.0f, 50.0f, 40.0f, 0.0f), -1.0f, 1.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+    slider2.setCallbackUpdate(myfuncSlider);
 
-    // std::shared_ptr<Slider> slider3 = std::make_shared<Slider>(100.0f, 20.0f, glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
-    // slider2->addChild(slider3);
-    // slider3->setCallbackUpdate(myfuncSlider);
+    Slider& slider3 = slider2.addChild<Slider>(glm::vec4(0.0f, 10.0f, 0.0f, 10.0f), glm::vec4(0.0f, 0.0f, 40.0f, 0.0f), 100.0f, 20.0f, glm::vec3(1.0f, 0.0f, 0.0f), 30.0f);
+    slider3.setCallbackUpdate(myfuncSlider);
 
-    Draggable& drag = popup.addChild<Draggable>(glm::vec4(0.0f, 0.0f, 50.0f, 50.0f), glm::vec4(90.0f, 90.0f, 0.0f, 0.0f), true);
+    Draggable& drag = popup.addChild<Draggable>(glm::vec4(0.0f, 0.0f, 50.0f, 50.0f), glm::vec4(90.0f, 90.0f, 0.0f, 0.0f), false);
 
-    // {std::shared_ptr<Button> button2 = std::make_shared<Button>(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f), glm::vec3(1.0f, 1.0f, 0.0f), 30.0f);
-    // drag->addChild(button2);
-    // drag->removeChild(button2);}
+    Button& button2 = root.addChild<Button>(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f), glm::vec4(40.0f, 10.0f, 20.0f, 20.0f));
     temp_UI::InputHandler input = temp_UI::InputHandler(&root);
 
     glfwSetWindowUserPointer( pWindow, &input );

@@ -19,19 +19,15 @@ TextBox::TextBox(
 	Face(pixels, percentage),
 	m_margin(margin),
 	m_color(color),
-	m_text("")
-{}
-
-bool TextBox::onTextInput(char character)
+	m_text(""),
+	m_isSelected(false)
 {
-	if (Face::onTextInput(character)) return true;
+	m_holdFocus = true; // todo put in constructor
+}
 
-	if (isFocused())
-	{
-		m_text.append(1, character);
-		return true;
-	}
-	return false;
+void TextBox::onTextInput(char character)
+{
+	m_text.append(1, character);
 }
 
 void TextBox::draw(IPainter* pPainter)

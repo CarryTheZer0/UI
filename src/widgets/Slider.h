@@ -29,10 +29,10 @@ public:
 
 	void draw(IPainter* pPainter) override;
 
-	bool onSelect(bool down, int modifiers) override;
+	void onSelect(bool down, int modifiers) override;
 
-	bool onCursorDragged(glm::vec2 offset) override;
-    bool onScroll(glm::vec2 offset) override;
+	void onCursorDragged(glm::vec2 offset) override;
+    void onScroll(glm::vec2 offset) override;
 
     void updateValue();
 

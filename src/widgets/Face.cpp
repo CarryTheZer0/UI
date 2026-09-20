@@ -11,10 +11,14 @@
 #include "Face.h"
 
 Face::Face(glm::vec4 pixels, glm::vec4 percentage) :
+	m_dimensions(),
+	m_parentDimensions(),
 	m_pixels(pixels),
 	m_percentage(percentage),
 	m_isActive(true),
 	m_isFocused(false),
+	m_isFrozen(false),
+	m_holdFocus(false),
 	m_focusedChild(0)
 {}
 
@@ -25,6 +29,8 @@ Face::Face(float width, float height, float x_offset, float y_offset) :
 	m_percentage(),
 	m_isActive(true),
 	m_isFocused(false),
+	m_isFrozen(false),
+	m_holdFocus(false),
 	m_focusedChild(0)
 {}
 
@@ -41,97 +47,120 @@ void Face::draw(IPainter* pPainter)
 	}
 }
 
-bool Face::onSelect(bool down, int modifiers)
+void Face::select(bool down, int modifiers)
 {
-	bool wasSelected = false;
-	if (!m_isActive) return wasSelected;
+	if (!m_isActive) return;
 
-	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+	if (m_isFrozen && down) 
+		m_isFrozen = false;
+	else if (down)
+		m_isFrozen = m_isFocused && m_holdFocus;
+
+	for (int index = 0; index < m_children.size(); index++)
 	{
-		wasSelected = (*face)->onSelect(down, modifiers);
-	}
+		if (m_children[index]->isFocused())
+			m_children[index]->onSelect(down, modifiers);
 
-	return wasSelected;
+		if (index == m_focusedChild) 
+		{
+			m_children[index]->select(down, modifiers);
+			m_isFrozen |= m_children[m_focusedChild]->isFrozen();
+		}
+	}
 }
 
-bool Face::onTextInput(char character)
+void Face::drag(glm::vec2 offset)
 {
-	bool wasRead = false;
-	if (!m_isActive) return wasRead;
+	if (!m_isActive) return;
 
-	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+	for (int index = 0; index < m_children.size(); index++)
 	{
-		wasRead = (*face)->onTextInput(character);
+		if (m_children[index]->isFocused())
+			m_children[index]->onCursorDragged(offset);
+
+		if (index == m_focusedChild) 
+			m_children[index]->drag(offset);
 	}
-	return wasRead;
 }
 
-bool Face::onCursorMoved(glm::vec2 position)
+void Face::scroll(glm::vec2 offset)
+{
+	if (!m_isActive) return;
+
+	for (int index = 0; index < m_children.size(); index++)
+	{
+		if (m_children[index]->isFocused())
+			m_children[index]->onScroll(offset);
+
+		if (index == m_focusedChild) 
+			m_children[index]->scroll(offset);
+	}
+}
+
+void Face::textInput(char character)
+{
+	if (!m_isActive) return;
+
+	for (int index = 0; index < m_children.size(); index++)
+	{
+		if (m_children[index]->isFocused())
+			m_children[index]->onTextInput(character);
+
+		if (index == m_focusedChild) 
+			m_children[index]->textInput(character);
+	}
+}
+
+bool Face::cursorMoved(glm::vec2 position)
 {
 	bool wasFocused = false;
-	if (!m_isActive) return wasFocused;
+	if (!m_isActive || m_isFrozen) return wasFocused;
 
-	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+	for (int index = 0; index < m_children.size(); index++) 
 	{
-		wasFocused = (*face)->onCursorMoved(position) || wasFocused;
+		bool childFocused = m_children[index]->cursorMoved(position); 
+		if (childFocused)
+		{
+			m_focusedChild = index;
+			wasFocused = true;
+		}
 	}
 
 	if (isInBounds(position) && !wasFocused)
 	{
-		m_isFocused = true;
-		wasFocused = true; // todo call protected onFocused; onCursorMoved becomes private
+		focus();
+		wasFocused = true;
 	}
 	else
 	{
-		m_isFocused = false;
+		unfocus();
 	}
 	
 	return wasFocused;
 }
 
-bool Face::onCursorDragged(glm::vec2 offset)
+bool Face::tryToShiftFocus()
 {
-	bool wasDragged = false;
-	if (!m_isActive) return wasDragged;
-
-	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+	if (m_focusedChild >= m_children.size()) return false;
+	while (!m_children[m_focusedChild]->isActive())
 	{
-		wasDragged = (*face)->onCursorDragged(offset);
+		if (m_focusedChild++ >= m_children.size()) return false;
 	}
-
-	return wasDragged;
-}
-
-bool Face::onScroll(glm::vec2 offset)
-{
-	bool wasScrolled = false;
-	if (!m_isActive) return wasScrolled;
-
-	for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
-	{
-		wasScrolled = (*face)->onScroll(offset);
-	}
-
-	return wasScrolled;
+		
+	m_children[m_focusedChild]->focus();
+	unfocus();
+	return true;
 }
 
 bool Face::cycleFocus()
 {
 	bool wasShifted = false;
-	if (!m_isActive) return wasShifted;
-
-	int firstActiveChild = 0;
-	while (firstActiveChild < m_children.size() && !m_children[firstActiveChild]->isActive())
-		firstActiveChild++;
+	if (!m_isActive || m_isFrozen) return wasShifted;
 
 	if (isFocused())
 	{
-		m_isFocused = false;
-		if (firstActiveChild < m_children.size())
-		{
-			m_children[firstActiveChild]->focus();
-			wasShifted = true;  // todo call protected onFocused for derived classes; cycleFocus becomes private
-		}
+		m_focusedChild = 0;
+		wasShifted = tryToShiftFocus();
 	}
 	else
 	{
@@ -143,28 +172,18 @@ bool Face::cycleFocus()
 
 	if (!wasShifted)
 	{
-		m_isFocused = false;
 		if (m_children.size() > 1)
 		{
 			for (auto& child : m_children)
 				child->unfocus();
 
 			m_focusedChild++;
-			while (m_focusedChild < m_children.size() && !m_children[m_focusedChild]->isActive())
-				m_focusedChild++;
-
-			if (m_focusedChild < m_children.size()) {
-				m_children[m_focusedChild]->focus();
-				wasShifted = true;
-			}
-			else
-			{
-				m_focusedChild = 0;
-			}
+			wasShifted = tryToShiftFocus();
+			if (!wasShifted) m_focusedChild = 0;
 		}
 		else if (m_children.size() == 1)
 		{
-			m_isFocused = true;
+			focus();
 		}
 	}
 

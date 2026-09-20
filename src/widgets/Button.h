@@ -35,7 +35,7 @@ public:
 
 	void draw(IPainter* pPainter) override;
 
-	bool onSelect(bool down, int modifiers) override;
+	void onSelect(bool down, int modifiers) override;
 	
 	template <class ListenerType>
 	ListenerType* addListener() { 

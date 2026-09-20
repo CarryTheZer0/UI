@@ -17,28 +17,20 @@ Draggable::Draggable(
     m_isHeld(false)
 {}
 
-bool Draggable::onSelect(bool down, int modifiers)
+void Draggable::onSelect(bool down, int modifiers)
 {
-    if (Face::onSelect(down, modifiers)) return true;
-	
     if (!down)
     {
         m_isHeld = false;
-        return false;
     }
     else if (isFocused())
     {
         m_isHeld = true;
-        return true;
     }
-
-    return false;
 }
 
-bool Draggable::onCursorDragged(glm::vec2 offset)
+void Draggable::onCursorDragged(glm::vec2 offset)
 {
-    if (Face::onCursorDragged(offset)) return true;
-
     if (m_isHeld)
     {
         if (m_clampToParent) 
@@ -50,9 +42,7 @@ bool Draggable::onCursorDragged(glm::vec2 offset)
             if (m_dimensions.y + m_dimensions.w + offset.y > m_parentDimensions.y + m_parentDimensions.w) offset.y = (m_parentDimensions.y + m_parentDimensions.w) - (m_dimensions.y + m_dimensions.w);
         }
         move(offset);
-        return true;
     }
-    return false;
 }
 
 void Draggable::draw(IPainter* pPainter)
