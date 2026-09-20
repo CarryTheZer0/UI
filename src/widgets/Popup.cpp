@@ -26,26 +26,17 @@ void Popup::draw(IPainter* pPainter)
 	Face::draw(pPainter);
 }
 
-bool Popup::onCursorMoved(glm::vec2 position)
+void Popup::onFocused()
 {
-    bool wasFocused = (Face::onCursorMoved(position));
-
-    bool childFocused = false;
-    for (auto face = m_children.rbegin(); face != m_children.rend(); ++face) 
-        if ((*face)->isFocused()) childFocused = true;
-
-    if (isFocused())
-    {
-        for (auto face = m_children.rbegin(); face != m_children.rend(); ++face) (*face)->setActive(true);
-    }
-    else if (!childFocused)
-    {
-        for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
-        {
-            (*face)->setActive(false);
-        }
-    }
-    
-    return wasFocused;
+    for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+        (*face)->setActive(true);
 }
 
+void Popup::onUnfocused()
+{
+    for (auto face = m_children.rbegin(); face != m_children.rend(); ++face) 
+        if ((*face)->isFocused()) return;
+    
+    for (auto face = m_children.rbegin(); face != m_children.rend(); ++face)
+        (*face)->setActive(false);
+}

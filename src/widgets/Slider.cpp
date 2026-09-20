@@ -39,50 +39,34 @@ void Slider::draw(IPainter* pPainter)
 	Face::draw(pPainter);
 }
 
-bool Slider::onSelect(bool down, int modifiers)
-{
-    if (Face::onSelect(down, modifiers)) return true;
-	
+void Slider::onSelect(bool down, int modifiers)
+{	
     if (!down)
     {
         m_isHeld = false;
-        return false;
     }
     else if (isFocused())
     {
         m_isHeld = true;
-        return true;
     }
-
-    return false;
 }
 
-bool Slider::onCursorDragged(glm::vec2 offset)
+void Slider::onCursorDragged(glm::vec2 offset)
 {
-    if (Face::onCursorDragged(offset)) return true;
-
     if (m_isHeld)
     {
         setOffset(offset.x);
         updateValue();
-        return true;
     }
-
-    return false;
 }
 
-bool Slider::onScroll(glm::vec2 offset)
+void Slider::onScroll(glm::vec2 offset)
 {
-    if (Face::onScroll(offset)) return true;
-
 	if (isFocused())
     {
         setOffset(offset.y);
         updateValue();
-        return true;
     }
-
-    return false;
 }
 
 void Slider::updateValue()

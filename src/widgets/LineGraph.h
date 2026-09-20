@@ -18,10 +18,10 @@ class LineGraph : public Face
 public:
 	LineGraph() = delete;
 	LineGraph(
-        float min=0.0f,
-		float max=1.0f,
 		glm::vec4 pixels=glm::vec4(), 
 		glm::vec4 percentage=glm::vec4(),
+		float min=0.0f,
+		float max=1.0f,
 		glm::vec3 color=glm::vec3(1.0f)
 	);
 

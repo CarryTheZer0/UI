@@ -38,16 +38,23 @@ public:
 	virtual void draw(IPainter* pPainter);
 
 	/// @return true if the widget was selected
-	virtual bool onSelect(bool down, int modifiers);
-	virtual bool onTextInput(char character);
+	virtual void onSelect(bool down, int modifiers) {}
+	virtual void onCursorDragged(glm::vec2 offset) {}
+	virtual void onScroll(glm::vec2 offset) {}
+	virtual void onTextInput(char character) {}
 
-	virtual bool onCursorMoved(glm::vec2 position);
-	virtual bool onCursorDragged(glm::vec2 offset);
-	virtual bool onScroll(glm::vec2 offset);
+	virtual void onFocused() {}
+	virtual void onUnfocused() {}
 
-	virtual bool cycleFocus();
-	virtual bool shiftFocusLevel(bool down);
-	virtual bool shiftFocus(glm::vec2 direction);
+	void select(bool down, int modifiers);
+	void drag(glm::vec2 offset);
+	void scroll(glm::vec2 offset);
+	void textInput(char character);
+
+	bool cursorMoved(glm::vec2 position);
+	bool cycleFocus();
+	bool shiftFocusLevel(bool down);
+	bool shiftFocus(glm::vec2 direction);
 
 	template <class FaceType, class... ValueTypes>
 	FaceType& addChild(
@@ -74,10 +81,12 @@ public:
 	void move(glm::vec2 transform);
 
 	bool isFocused() { return m_isFocused; }
+	bool isFrozen() { return m_isFrozen; }
 	bool isActive() { return m_isActive; }
+
 	void setActive(bool active) {
 		m_isActive = active;
-		if (!active) m_isFocused = false;
+		m_isFocused = m_isFocused && active;
 	}
 protected:
 	glm::vec4 m_parentDimensions;
@@ -85,19 +94,23 @@ protected:
 	glm::vec4 m_percentage;
 	glm::vec4 m_dimensions;
 
+	bool m_holdFocus;
+
 	std::vector<std::unique_ptr<Face>> m_children;
 
 	void setRect(); 
 
 	bool isInBounds(glm::vec2 position);
-
-	void focus() { m_isFocused = true; } 
-	void unfocus() { m_isFocused = false; }
-
 private:
 	bool m_isFocused;
 	bool m_isActive;
+	bool m_isFrozen;
 	int m_focusedChild;
+
+	bool tryToShiftFocus();
+
+	void focus() { m_isFocused = true; onFocused(); } 
+	void unfocus() { m_isFocused = false; onUnfocused(); }
 };
 
 #endif /* UI_FACE_H_ */

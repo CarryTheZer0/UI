@@ -17,11 +17,11 @@ public:
 	Draggable(
 		glm::vec4 pixels=glm::vec4(), 
 		glm::vec4 percentage=glm::vec4(),
-        bool clampToParent=false
+        bool clampToParent=true
 	);
 
-    bool onSelect(bool down, int modifiers) override;
-    bool onCursorDragged(glm::vec2 offset) override;
+    void onSelect(bool down, int modifiers) override;
+    void onCursorDragged(glm::vec2 offset) override;
 
     void draw(IPainter* pPainter) override;
 
